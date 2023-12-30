@@ -1,0 +1,36 @@
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save
+
+class User(AbstractUser):
+    username = models.CharField(unique=True, max_length=150)
+    email = models.EmailField(unique=True)
+    
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["email"]
+
+    def __str__(self) -> str:
+        return self.username
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    
+    full_name = models.CharField(max_length=50)
+    bio = models.CharField(max_length=300)
+    image = models.ImageField(default="default.jpg", upload_to="user_images")
+    verified = models.BooleanField(default=False)
+    
+    def __str__(self) -> str:
+        return self.full_name
+
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
+
+post_save.connect(create_user_profile, sender=User)
+post_save.connect(save_user_profile, sender=User)
+
+
