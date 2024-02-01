@@ -51,8 +51,8 @@ export default function ChatWindow({ recipient, messages, user_id, newMessage, s
             value={newMessage}
             onChange={handleChange}
           />
-          <Button onClick={sendMessage}><SendIcon/></Button>
-          {/* Optionally add emoji picker or other buttons */}
+          <Button onClick={sendMessage} ><SendIcon/></Button>
+          {/* TODO: Optionally add emoji picker or other buttons */}
         </Box>
     </Paper>
   );
