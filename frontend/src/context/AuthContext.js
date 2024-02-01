@@ -1,6 +1,7 @@
 import React, { useState, createContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {jwtDecode } from "jwt-decode"
+import { AUTHTOKENS } from "../utils/enums";
 
 const AuthContext = createContext();
 
@@ -8,15 +9,15 @@ export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
     const [authTokens, setAuthTokens] = useState(() => 
-        localStorage.getItem("authTokens")
-            ? JSON.parse(localStorage.getItem("authTokens"))
+        localStorage.getItem(AUTHTOKENS)
+            ? JSON.parse(localStorage.getItem(AUTHTOKENS))
             : null
     );
 
     const [user, setUser] = useState(() => 
-        localStorage.getItem("authTokens")
-            ? jwtDecode(JSON.parse(localStorage.getItem("authTokens")).access)
-            // ? jwtDecode(localStorage.getItem("authTokens"))
+        localStorage.getItem(AUTHTOKENS)
+            ? jwtDecode(JSON.parse(localStorage.getItem(AUTHTOKENS)).access)
+            // ? jwtDecode(localStorage.getItem(AUTHTOKENS))
             : null
     );
 
@@ -40,7 +41,7 @@ export const AuthProvider = ({ children }) => {
             setAuthTokens(data)
             setUser(jwtDecode(data.access))
 
-            localStorage.setItem("authTokens", JSON.stringify(data))
+            localStorage.setItem(AUTHTOKENS, JSON.stringify(data))
             navigate("/")
         } else {
             console.log("loginUser >> ERROR", response.status)
@@ -67,13 +68,9 @@ export const AuthProvider = ({ children }) => {
     const logoutUser = () => {
         setAuthTokens(null)
         setUser(null)
-        localStorage.removeItem("authTokens")
+        localStorage.removeItem(AUTHTOKENS)
         navigate("/login")
     };
-
-    function testfunc() {
-        console.log(">>>>>>> test ")
-    }
 
     const ContextData = {
         user, setUser,
@@ -81,7 +78,6 @@ export const AuthProvider = ({ children }) => {
         registerUser,
         loginUser,
         logoutUser,
-        testfunc,
         // loading, setLoading,
 
     }

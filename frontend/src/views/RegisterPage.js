@@ -28,7 +28,6 @@ export default function RegisterPage() {
             data.get('password2'),
         )
     };
-    console.log(">>>>>")
 
     return (
         <ThemeProvider theme={defaultTheme}>

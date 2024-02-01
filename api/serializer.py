@@ -63,10 +63,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    sender_serializer = ProfileSerializer(read_only=True)
-    receiver_serializer = ProfileSerializer(read_only=True)
+    sender_profile = ProfileSerializer(read_only=True)
+    receiver_profile = ProfileSerializer(read_only=True)
 
     class Meta:
         model = ChatMessage
-        fields = ["id", "user", "sender", "sender_serializer",
-                  "receiver", "receiver_serializer", "message", "is_read", "date"]
+        fields = ["id", "user", "sender", "sender_profile",
+                  "receiver", "receiver_profile", "message", "is_read", "date"]

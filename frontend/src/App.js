@@ -7,6 +7,7 @@ import DashboardPage from "./views/DashboardPage";
 import PrivateRoute from "./utils/PrivateRoute";
 import RegisterPage from "./views/RegisterPage";
 import HomePage from "./views/HomePage";
+import InboxPage from "./views/InboxPage";
 
 function App() {
   return (
@@ -17,6 +18,8 @@ function App() {
           <Route path="/login" Component={LogInPage} />
           <Route path="/register" Component={RegisterPage} />
           <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+          <Route path="/inbox" element={<PrivateRoute><InboxPage /></PrivateRoute>} />
+          <Route path="/inbox/:userId" element={<PrivateRoute><InboxPage /></PrivateRoute>} />
           <Route exact path="/" Component={HomePage} />
         </Routes>
       </AuthProvider>

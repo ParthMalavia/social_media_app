@@ -3,10 +3,10 @@ import {jwtDecode} from "jwt-decode";
 import dayjs from "dayjs";
 import {useContext} from "react";
 import AuthContext from "../context/AuthContext";
+import { AUTHTOKENS, BASE_URL } from "./enums";
 
-const BASE_URL = "http://127.0.0.1:8000/api";
 
-export default UseAxios = () => {
+const UseAxios = () => {
 
     const {authTokens, setUser, setAuthTokens} = useContext(AuthContext);
     const axiosInstance = axios.create({
@@ -16,7 +16,6 @@ export default UseAxios = () => {
     
     axiosInstance.interceptors.request.use(async req => {
         const user = jwtDecode(authTokens.access)
-        console.log(">>>>", localStorage)
         const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
 
         if (!isExpired) return req;
@@ -24,8 +23,7 @@ export default UseAxios = () => {
         const response = await axios.post(`${BASE_URL}/token/refresh/`, {
             refresh: authTokens.refresh
         })
-        console.log(">>>> REFRESH token");
-        localStorage.setItem("authTokens", JSON.stringify(authTokens));
+        localStorage.setItem(AUTHTOKENS, JSON.stringify(authTokens));
         setAuthTokens(response.data);
         setUser(jwtDecode(response.data.access));
 
@@ -35,3 +33,5 @@ export default UseAxios = () => {
 
     return axiosInstance
 }
+
+export default UseAxios;

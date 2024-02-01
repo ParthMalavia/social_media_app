@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Tooltip, MenuItem } from "@mui/material"
 import MenuIcon from '@mui/icons-material/Menu';
 import AdbIcon from '@mui/icons-material/Adb';
@@ -12,7 +12,7 @@ function Navbar() {
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const navigate = useNavigate();
-    const {user, logoutUser} = useContext(AuthContext)
+    const { user, logoutUser } = useContext(AuthContext)
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -31,30 +31,29 @@ function Navbar() {
 
     const navbarOptions = () => {
         if (!!user) {
-            return (
-                <>
+            return [
                 <MenuItem key={"Homepage"} onClick={() => navigate("/")}>
                     <Typography textAlign="center">{"Homepage"}</Typography>
-                </MenuItem>
+                </MenuItem>,
                 <MenuItem key={"Dashboard"} onClick={() => navigate("/dashboard")}>
                     <Typography textAlign="center">{"Dashboard"}</Typography>
-                </MenuItem>
+                </MenuItem>,
+                <MenuItem key={"Inbox"} onClick={() => navigate("/inbox")}>
+                    <Typography textAlign="center">{"Inbox"}</Typography>
+                </MenuItem>,
                 <MenuItem key={"Logout"} onClick={logoutUser}>
                     <Typography textAlign="center">{"Logout"}</Typography>
-                </MenuItem>
-                </>
-            )
+                </MenuItem>,
+            ]
         }
-        return (
-            <>
+        return [
             <MenuItem key={"Login"} onClick={() => navigate("/login")}>
                 <Typography textAlign="center">{"Login"}</Typography>
-            </MenuItem>
+            </MenuItem>,
             <MenuItem key={"Register"} onClick={() => navigate("/register")}>
                 <Typography textAlign="center">{"Register"}</Typography>
             </MenuItem>
-            </>
-        )
+        ]
     }
 
     return (
