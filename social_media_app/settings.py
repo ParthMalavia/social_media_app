@@ -26,12 +26,15 @@ SECRET_KEY = 'django-insecure-s6xj4o72b%p5l%t1z5h3g^-hygmznrp@03ve!**_q1=3)f7z$q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    # 'channels',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -75,7 +78,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'social_media_app.wsgi.application'
+# WSGI_APPLICATION = 'social_media_app.wsgi.application'
+ASGI_APPLICATION = 'social_media_app.asgi.application'
 
 
 # Database
