@@ -7,13 +7,16 @@ import {
   Paper,
   TextField,
   Button,
-  Send
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 
 
 export default function ChatWindow({ recipient, messages, user_id, newMessage, setNewMessage, sendMessage }) {
 
+  function handleSubmit(event) {
+    event.preventDefault()
+    sendMessage()
+  }
   function handleChange(event) {
     setNewMessage(event.target.value)
   }
@@ -43,17 +46,17 @@ export default function ChatWindow({ recipient, messages, user_id, newMessage, s
         ))}
 
       </Box>
-        <Box sx={{ position: 'fix', bottom: 0, width: '100%', p: 1, display: 'flex' }}>
-          <TextField
-            variant="outlined"
-            placeholder="Type your message"
-            fullWidth
-            value={newMessage}
-            onChange={handleChange}
-          />
-          <Button onClick={sendMessage} ><SendIcon/></Button>
-          {/* TODO: Optionally add emoji picker or other buttons */}
-        </Box>
+      <Box component="form" onSubmit={handleSubmit} sx={{ position: 'fix', bottom: 0, width: '100%', p: 1, display: 'flex' }}>
+        <TextField
+          variant="outlined"
+          placeholder="Type your message"
+          fullWidth
+          value={newMessage}
+          onChange={handleChange}
+        />
+        <Button type='submit' onClick={sendMessage} ><SendIcon/></Button>
+        {/* TODO: Optionally add emoji picker or other buttons */}
+      </Box>
     </Paper>
   );
 };

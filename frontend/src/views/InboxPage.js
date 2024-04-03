@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Box, Grid, Toolbar, List, ListItem, ListItemIcon, ListItemText, Divider,
+    Box, Grid, Toolbar, List, ListItem, ListItemIcon, ListItemText,
     Avatar, Typography, Paper, TextField, Container, Button
 } from '@mui/material';
 import ChatWindow from './ChatWindow';
@@ -8,11 +8,14 @@ import UseAxios from "../utils/UseAxios"
 import { AUTHTOKENS, BASE_URL } from '../utils/enums';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate, useParams } from 'react-router-dom';
+import {useContext} from "react";
+import AuthContext from "../context/AuthContext";
 
 import SearchIcon from '@mui/icons-material/Search';
 
 const InboxPage = () => {
     const { userId } = useParams();
+    const {authTokens} = useContext(AuthContext);
 
     const [selectedUser, setSelectedUser] = useState(null);
     const [chatMessages, setChatMessages] = useState([]);
@@ -20,10 +23,9 @@ const InboxPage = () => {
 
     const [searchQuery, setSearchQuery] = useState("");
     const [searchUsers, setSearchUsers] = useState([]);
+    const [socket, setSocket] = useState(null);
 
     const navigate = useNavigate()
-
-
 
     const axios = UseAxios();
     const [users, setUsers] = useState([]);
@@ -50,7 +52,36 @@ const InboxPage = () => {
     }
     useEffect(() => {
         if (!userId) setSelectedUser(null)
+        if (userId) {
+            const newSocket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${userId}/?token=${authTokens.access}`)
+            newSocket.onopen = e => console.log("Open Socket with user id:", userId, e)
+            newSocket.onerror = e => console.log("Error Socket with user id:", userId, e)
+            newSocket.onclose = e => {
+                console.log("Closing Socket with user id:", userId, e)
+                setSocket(null)
+            }
+            
+            setSocket(newSocket)
+        }
+
+        // Fetch previous messages
+        getMessages()
+
+        return () => {
+            if (socket) {
+                socket.close()
+            }
+            setChatMessages([])
+        }
     }, [userId])
+
+    useEffect(() => {
+        if (socket) {
+            socket.onmessage = (e) => {
+                setChatMessages([...chatMessages, JSON.parse(e.data)])
+            }
+        }
+    }, [chatMessages, socket])
 
     const selectUserClickHandler = (user) => {
         setSelectedUser(user)
@@ -58,11 +89,6 @@ const InboxPage = () => {
         setSearchQuery("")
         setSearchUsers([])
     };
-
-    useEffect(() => {
-        const interval = setInterval(getMessages, 1000)
-        return () => { clearInterval(interval) }
-    }, [selectedUser, setSelectedUser])
 
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
@@ -89,19 +115,11 @@ const InboxPage = () => {
     }
 
     function sendMessage() {
-        const formData = new FormData()
+        if (newMessage.trim() === "")
+            return
+        socket.send(newMessage)
+        setNewMessage("")
 
-        formData.append("user", user_id)
-        formData.append("sender", user_id)
-        formData.append("receiver", userId)
-        formData.append("message", newMessage)
-
-        axios.post(`${BASE_URL}/send-message/`, formData)
-            .then(res => {
-                console.log(res)
-                setNewMessage("")
-            })
-            .catch(err => console.log("Send Message Error::", err))
     }
 
     function searchProfiles() {

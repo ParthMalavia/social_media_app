@@ -1,4 +1,3 @@
-from django.shortcuts import render
 
 from .models import Profile, User, ChatMessage
 from .serializer import UserSerializer, MyTokenObtainPairSerializer, RegisterSerializer, MessageSerializer, ProfileSerializer
@@ -60,6 +59,25 @@ class MyInbox(generics.ListAPIView):
 
         return messages
 
+@permission_classes([IsAuthenticated])
+class GetUserList(generics.ListAPIView):
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        user_id = self.request.user.id
+        chat = ChatMessage.objects.filter(
+                Q(sender=user_id) | Q(receiver=user_id)
+            ).distinct()
+        users = User.objects.exclude(id=user_id).order_by("-id")
+        # users = User.objects.filter(
+        #     id__in=Subquery(
+        #         ChatMessage.objects.filter(
+        #             Q(sender=user_id) | Q(receiver=user_id)
+        #         ).distinct().values_list("sender", "receiver")
+        #     )
+        # ).exclude(id=user_id).order_by("-id")
+        return users
+
 
 class GetMessages(generics.ListAPIView):
     serializer_class = MessageSerializer
@@ -92,7 +110,6 @@ class SearchUser(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         username = self.kwargs["username"]
         logged_in_user = self.request.user
-        print("logged_in_user >> ", logged_in_user)
         users = Profile.objects.filter(
             Q(user__username__icontains=username) |
             Q(full_name__icontains=username) |

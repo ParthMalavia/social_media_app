@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -75,7 +76,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'social_media_app.wsgi.application'
+# WSGI_APPLICATION = 'social_media_app.wsgi.application'
+ASGI_APPLICATION = 'social_media_app.asgi.application'
 
 
 # Database
@@ -179,4 +181,11 @@ CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = "api.User"
 
 
-
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}

@@ -14,16 +14,11 @@ import AuthContext from '../context/AuthContext';
 const defaultTheme = createTheme();
 
 export default function LogInPage() {
-    const { user, loginUser } = useContext(AuthContext)
+    const { loginUser } = useContext(AuthContext)
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            username: data.get('username'),
-            password: data.get('password'),
-        });
         loginUser(data.get('username'), data.get('password'))
-        console.log("Login Page >> user :: ", user)
     };
 
     return (

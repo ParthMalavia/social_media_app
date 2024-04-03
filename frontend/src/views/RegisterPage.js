@@ -16,11 +16,6 @@ export default function RegisterPage() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            username: data.get('username'),
-            password: data.get('password'),
-        });
         registerUser(
             data.get('email'),
             data.get('username'),

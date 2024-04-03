@@ -8,10 +8,3 @@ export default function PrivateRoute({children, ...rest}) {
     const {user} = useContext(AuthContext);
     return user ? children : <Navigate to="/login" replace />;
 }
-
-// export default function PrivateRoute({children, ...rest}) {
-
-//     const {user} = useContext(AuthContext);
-    
-//     return <Route {...rest}>{!user ? <Navigate to="/login" replace /> : children}</Route>
-// }
