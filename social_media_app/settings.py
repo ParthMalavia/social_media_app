@@ -180,12 +180,12 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Set custom user model
 AUTH_USER_MODEL = "api.User"
 
-
+REDIS_PORT = 6379
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("localhost", 6379)],
+            "hosts": [("localhost", REDIS_PORT)],
         },
     },
 }
