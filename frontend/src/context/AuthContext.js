@@ -34,32 +34,17 @@ export const AuthProvider = ({ children }) => {
 
         const data = await response.json();
 
-        if (response.status === 200) {
+        if (!response.ok) {
+            throw data
+        } else {
             setAuthTokens(data)
             setUser(jwtDecode(data.access))
 
             localStorage.setItem(AUTHTOKENS, JSON.stringify(data))
             navigate("/")
-        } else {
-            console.log("loginUser >> ERROR", response.status)
         }
     };
 
-    const registerUser = async (full_name, email, username, password, password2) => {
-        const response = await fetch(`${BASE_URL}/register/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ full_name, email, username, password, password2 })
-        });
-
-        if (response.status === 201) {
-            navigate("/login")
-        } else {
-            console.log("registerUser >> ERROR", response.json())
-        }
-    };
 
     const logoutUser = () => {
         setAuthTokens(null)
@@ -71,7 +56,6 @@ export const AuthProvider = ({ children }) => {
     const ContextData = {
         user, setUser,
         authTokens, setAuthTokens,
-        registerUser,
         loginUser,
         logoutUser,
 

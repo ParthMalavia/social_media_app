@@ -177,7 +177,7 @@ SIMPLE_JWT = {
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
 
-
+# Set custom user model
 AUTH_USER_MODEL = "api.User"
 
 

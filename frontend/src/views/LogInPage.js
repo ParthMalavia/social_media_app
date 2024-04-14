@@ -1,19 +1,28 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
-    Avatar, Button, CssBaseline, TextField,
+    Avatar, Alert, Button, CssBaseline, TextField,
     Link, Grid, Box, Typography, Container,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import AuthContext from '../context/AuthContext';
 
 const LoginPage = () => {
+    const [error, setError] = useState(null)
     const { loginUser } = useContext(AuthContext);
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        loginUser(data.get('username'), data.get('password'));
+        loginUser(data.get('username'), data.get('password'))
+            .catch(err => setError(err));
     };
+
+    useEffect(() => {
+        if (error) {
+            const timeout = setTimeout(() => setError(null), 5000)
+            return () => clearTimeout(timeout)
+        }
+    }, [error])
 
     return (
         <Container component="main" maxWidth="xs">
@@ -32,6 +41,9 @@ const LoginPage = () => {
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
+                {error && Object.entries(error).map(([key, value]) => (
+                    <Alert key={key} severity="error">{key}: {value}</Alert>
+                ))}
                 <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"

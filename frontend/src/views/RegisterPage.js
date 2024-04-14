@@ -1,13 +1,39 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Avatar, Button, CssBaseline, TextField, FormControlLabel,
-    Checkbox, Link, Grid, Box, Typography, Container,
+    Avatar, Alert, Button, CssBaseline, TextField,
+    Link, Grid, Box, Typography, Container,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import AuthContext from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../utils/enums';
 
 export default function RegisterPage() {
-    const { registerUser } = useContext(AuthContext)
+
+    const navigate = useNavigate();
+    const [error, setError] = useState(null)
+
+    useEffect(() => {
+        if (error) {
+            const timeout = setTimeout(() => setError(null), 4000)
+            return () => clearTimeout(timeout)
+        }
+    }, [error])
+
+    const registerUser = async (full_name, email, username, password, password2) => {
+        const response = await fetch(`${BASE_URL}/register/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ full_name, email, username, password, password2 })
+        });
+
+        if (response.ok) {
+            navigate("/login")
+        } else {
+            setError(await response.json())
+        }
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -38,6 +64,9 @@ export default function RegisterPage() {
                 <Typography component="h1" variant="h5">
                     Sign up
                 </Typography>
+                {error && Object.entries(error).map(([key, value]) => (
+                    <Alert key={key} severity="error">{key}: {value}</Alert>
+                ))}
                 <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
