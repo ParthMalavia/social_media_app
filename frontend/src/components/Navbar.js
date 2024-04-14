@@ -6,38 +6,23 @@ import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 // import Logo from '../images/Instagram-logo.svg';
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Profile', 'Account', 'Logout'];
 
 function Navbar() {
+    const navigate = useNavigate();
+
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [anchorElUser, setAnchorElUser] = useState(null);
-    const navigate = useNavigate();
     const { user, logoutUser } = useContext(AuthContext)
 
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
-    const handleOpenUserMenu = (event) => {
-        setAnchorElUser(event.currentTarget);
-    };
-
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
-
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
-    };
+    const handleOpenNavMenu = (event) => setAnchorElNav(event.currentTarget);
+    const handleOpenUserMenu = (event) => setAnchorElUser(event.currentTarget);
+    const handleCloseNavMenu = () => setAnchorElNav(null);
+    const handleCloseUserMenu = () => setAnchorElUser(null);
 
     const navbarOptions = () => {
         if (!!user) {
             return [
-                <MenuItem key={"Homepage"} onClick={() => navigate("/")}>
-                    <Typography textAlign="center">{"Homepage"}</Typography>
-                </MenuItem>,
-                <MenuItem key={"Dashboard"} onClick={() => navigate("/dashboard")}>
-                    <Typography textAlign="center">{"Dashboard"}</Typography>
-                </MenuItem>,
                 <MenuItem key={"Inbox"} onClick={() => navigate("/inbox")}>
                     <Typography textAlign="center">{"Inbox"}</Typography>
                 </MenuItem>,

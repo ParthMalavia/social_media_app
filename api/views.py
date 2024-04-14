@@ -1,16 +1,13 @@
 
 from .models import Profile, User, ChatMessage
-from .serializer import UserSerializer, MyTokenObtainPairSerializer, RegisterSerializer, MessageSerializer, ProfileSerializer
+from .serializer import MyTokenObtainPairSerializer, RegisterSerializer, MessageSerializer, ProfileSerializer
 
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
-from rest_framework.views import APIView
-import json
 from django.db.models import Subquery, OuterRef, Q
-from django.db import connection
+import json
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -21,18 +18,6 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
-
-
-@permission_classes([IsAuthenticated])
-class DashboardView(APIView):
-    def get(self, request):
-        context = f"Hey {request.user}, You are seeing get response."
-        return Response({"response": context}, status=status.HTTP_200_OK)
-
-    def post(self, request):
-        text = request.POST.get('text')
-        context = f"Hey {request.user}, Your text is: {text}."
-        return Response({"response": context}, status=status.HTTP_200_OK)
 
 
 class MyInbox(generics.ListAPIView):
@@ -73,13 +58,13 @@ class SendMessage(generics.CreateAPIView):
 class ProfileDetails(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
-    # permission_classes = [IsAuthenticated]    # TODO: Add at teh end to add authentication
+    permission_classes = [IsAuthenticated]
 
 
 class SearchUser(generics.ListAPIView):
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
-    # permission_classes = [IsAuthenticated]    # TODO: Add at teh end to add authentication
+    permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         username = self.kwargs["username"]

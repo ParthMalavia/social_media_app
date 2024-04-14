@@ -1,32 +1,30 @@
-import React, { useState, createContext, useEffect } from "react";
+import React, { useState, useEffect, createContext } from "react";
 import { useNavigate } from "react-router-dom";
-import {jwtDecode } from "jwt-decode"
-import { AUTHTOKENS } from "../utils/enums";
+import { jwtDecode } from "jwt-decode"
+import { AUTHTOKENS, BASE_URL } from "../utils/enums";
 
 const AuthContext = createContext();
 
 export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+
+    const [user, setUser] = useState(() => 
+        localStorage.getItem(AUTHTOKENS)
+            ? jwtDecode(JSON.parse(localStorage.getItem(AUTHTOKENS)).access)
+            : null
+    );
+
     const [authTokens, setAuthTokens] = useState(() => 
         localStorage.getItem(AUTHTOKENS)
             ? JSON.parse(localStorage.getItem(AUTHTOKENS))
             : null
     );
 
-    const [user, setUser] = useState(() => 
-        localStorage.getItem(AUTHTOKENS)
-            ? jwtDecode(JSON.parse(localStorage.getItem(AUTHTOKENS)).access)
-            // ? jwtDecode(localStorage.getItem(AUTHTOKENS))
-            : null
-    );
-
-    const navigate = useNavigate();
-
-    const [loading, setLoading] = useState(true);
-
     const loginUser = async (username, password) => {
-        const response = await fetch("http://127.0.0.1:8000/api/token/", {
+        const response = await fetch(`${BASE_URL}/token/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -35,7 +33,6 @@ export const AuthProvider = ({ children }) => {
         });
 
         const data = await response.json();
-        console.log("loginUser >> data ::", data);
 
         if (response.status === 200) {
             setAuthTokens(data)
@@ -48,20 +45,19 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const registerUser = async (email, username, password, password2) => {
-        const response = await fetch("http://127.0.0.1:8000/api/register/", {
+    const registerUser = async (full_name, email, username, password, password2) => {
+        const response = await fetch(`${BASE_URL}/register/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email, username, password, password2 })
+            body: JSON.stringify({ full_name, email, username, password, password2 })
         });
-        console.log("registerUser >> response ::", await response.json())
 
         if (response.status === 201) {
             navigate("/login")
         } else {
-            console.log("registerUser >> ERROR", response.status)
+            console.log("registerUser >> ERROR", response.json())
         }
     };
 
@@ -78,7 +74,6 @@ export const AuthProvider = ({ children }) => {
         registerUser,
         loginUser,
         logoutUser,
-        // loading, setLoading,
 
     }
 
@@ -96,4 +91,3 @@ export const AuthProvider = ({ children }) => {
     )
 
 }
-

@@ -1,6 +1,6 @@
 
 from rest_framework_simplejwt.views import TokenRefreshView
-from django.urls import path, include
+from django.urls import path
 from api import views
 
 app_name = "api"

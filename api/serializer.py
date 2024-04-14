@@ -7,7 +7,6 @@ from django.contrib.auth.password_validation import validate_password
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ["id", "username", "email"]
@@ -36,20 +35,25 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    # TODO: Add password validation
-    # password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password = serializers.CharField(
         write_only=True, required=True, validators=[])
     password2 = serializers.CharField(write_only=True, required=True)
+    full_name = serializers.CharField(required=False)
 
     class Meta:
         model = User
-        fields = ["email", "username", "password", "password2"]
+        fields = ["email", "username", "password", "password2", "full_name"]
 
     def validate(self, attr):
         if attr["password"] != attr["password2"]:
             raise serializers.ValidationError(
                 {"password": "password field does not match"})
+        if not (attr.get("full_name") and attr["full_name"].strip()):
+            raise serializers.ValidationError(
+                {"full_name": "full_name field is required"}
+            )
+        else:
+            attr["full_name"] = attr["full_name"].strip()
         return attr
 
     def create(self, attr):
@@ -59,6 +63,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         user.set_password(attr['password'])
         user.save()
+        profile = Profile.objects.filter(user=user).first()
+        if profile:
+            profile.full_name = attr['full_name']
+            profile.save()
         return user
 
 

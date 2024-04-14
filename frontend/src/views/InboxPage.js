@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import ChatWindow from './ChatWindow';
 import UseAxios from "../utils/UseAxios"
-import { AUTHTOKENS, BASE_URL } from '../utils/enums';
+import { AUTHTOKENS, BASE_URL, WS_BASE_URL } from '../utils/enums';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate, useParams } from 'react-router-dom';
 import {useContext} from "react";
@@ -35,10 +35,7 @@ const InboxPage = () => {
 
     useEffect(() => {
         axios.get(`${BASE_URL}/my-inbox/${user_id}/`)
-            .then(res => {
-                console.log(res)
-                setUsers(res.data)
-            })
+            .then(res => setUsers(res.data))
             .catch(err => console.log("Get Inbox Error:", err))
 
     }, [navigate])
@@ -47,20 +44,17 @@ const InboxPage = () => {
         if (selectedUser) {
             axios.get(`${BASE_URL}/get-messages/${user_id}/${selectedUser.id}`)
                 .then(res => setChatMessages(res.data))
-                .catch(err => console.log("Get Inbox Error:", err))
+                .catch(err => console.log("Get MEssages Error:", err))
         }
     }
     useEffect(() => {
         if (!userId) setSelectedUser(null)
         if (userId) {
-            const newSocket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${userId}/?token=${authTokens.access}`)
+            const newSocket = new WebSocket(`${WS_BASE_URL}/chat/${userId}/?token=${authTokens.access}`)
             newSocket.onopen = e => console.log("Open Socket with user id:", userId, e)
             newSocket.onerror = e => console.log("Error Socket with user id:", userId, e)
-            newSocket.onclose = e => {
-                console.log("Closing Socket with user id:", userId, e)
-                setSocket(null)
-            }
-            
+            newSocket.onclose = e => setSocket(null)
+
             setSocket(newSocket)
         }
 
